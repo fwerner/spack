@@ -59,7 +59,6 @@ class Geant4(CMakePackage):
         description="Use the specified C++ standard when building.",
     )
 
-    variant("builtin_clhep", default=False, description="Use builtin CLHEP")
     variant("threads", default=True, description="Build with multithreading")
     variant("vecgeom", default=False, description="Enable vecgeom support", when="@10.3:")
     variant("opengl", default=False, description="Optional OpenGL support")
@@ -130,7 +129,7 @@ class Geant4(CMakePackage):
                 yield (v, "")
 
     for _std, _when in std_when(_cxxstd_values):
-        depends_on(f"clhep cxxstd={_std}", when=f"{_when} ~builtin_clhep cxxstd={_std}")
+        depends_on(f"clhep cxxstd={_std}", when=f"{_when} cxxstd={_std}")
         depends_on(f"vecgeom cxxstd={_std}", when=f"{_when} +vecgeom cxxstd={_std}")
 
         # Spack only supports Xerces-c 3 and above, so no version req
@@ -227,17 +226,13 @@ class Geant4(CMakePackage):
 
         # Core options
         options = [
+            self.define("GEANT4_USE_SYSTEM_CLHEP", True),
             self.define("GEANT4_USE_SYSTEM_EXPAT", True),
             self.define("GEANT4_USE_SYSTEM_ZLIB", True),
             self.define("GEANT4_USE_G3TOG4", True),
             self.define("GEANT4_USE_GDML", True),
             self.define("XERCESC_ROOT_DIR", spec["xerces-c"].prefix),
         ]
-
-        if "+builtin_clhep" in spec:
-            options.append(self.define("GEANT4_USE_BUILTIN_CLHEP", True))
-        else:
-            options.append(self.define("GEANT4_USE_SYSTEM_CLHEP", True))
 
         # Use the correct C++ standard option for the requested version
         if spec.version >= Version("11.0"):
