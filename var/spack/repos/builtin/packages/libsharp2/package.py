@@ -10,16 +10,19 @@ class Libsharp2(AutotoolsPackage):
     """Libsharp2 is a code library for spherical harmonic transforms (SHTs) and
     spin-weighted spherical harmonic transforms, which evolved from the libpsht
     library. Because the upstream repository has no tags or releases, this
-    package tracks the versions found in HEALPix releases."""
+    package tracks the versions published together with HEALPix releases."""
 
     variant("openmp", default=True, description="Build with openmp support")
     variant("mpi", default=True, description="Build with MPI support")
     variant("pic", default=True, description="Generate position-independent code (PIC)")
+    variant("fast_math", default=True, description="Enable recommended fast-math optimisations")
 
     homepage = "https://gitlab.mpcdf.mpg.de/mtr/libsharp"
     git = "https://gitlab.mpcdf.mpg.de/mtr/libsharp.git"
 
     version("3.82.0", sha256="47629f057a2daf06fca3305db1c6950edb9e61bbe2d7ed4d98ff05809da2a127")
+
+    conflicts("libsharp")
 
     depends_on("autoconf", type="build")
     depends_on("mpi", when="+mpi")
@@ -38,4 +41,9 @@ class Libsharp2(AutotoolsPackage):
             args.append("--disable-mpi")
         if "+pic" in self.spec:
             args.append("--enable-pic")
+        if "+fast_math" in self.spec:
+            # As per author recommendation, fast-math should only be used in the *compile* step,
+            # and *not* during the linking step. The simplest way of doing this is to
+            # (unconventionally) pass this as a pre-processor flag.
+            args.append("CPPFLAGS=-ffast-math")
         return args
