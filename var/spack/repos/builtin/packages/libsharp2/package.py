@@ -20,7 +20,7 @@ class Libsharp2(AutotoolsPackage):
     homepage = "https://gitlab.mpcdf.mpg.de/mtr/libsharp"
     git = "https://gitlab.mpcdf.mpg.de/mtr/libsharp.git"
 
-    version("3.82.0", sha256="47629f057a2daf06fca3305db1c6950edb9e61bbe2d7ed4d98ff05809da2a127")
+    version("3.82.0", sha256="9c1b0bbbcf007359d1ef10ae3ae9a2f46c72a4eb0c2fdbb43683289002ba8552")
 
     conflicts("libsharp")
 
